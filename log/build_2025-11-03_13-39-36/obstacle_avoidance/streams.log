@@ -1,0 +1,23 @@
+[1.358s] Invoking command in '/home/nvidia/ros2_uoa/src/obstacle_avoidance': PYTHONPATH=/home/nvidia/ros2_uoa/build/obstacle_avoidance/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nvidia/ros2_uoa/install/obstacle_avoidance/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/obstacle_avoidance build --build-base /home/nvidia/ros2_uoa/build/obstacle_avoidance/build install --record /home/nvidia/ros2_uoa/build/obstacle_avoidance/install.log --install-scripts $base/lib/obstacle_avoidance --single-version-externally-managed install_data
+[1.806s] running egg_info
+[1.807s] writing ../../build/obstacle_avoidance/obstacle_avoidance.egg-info/PKG-INFO
+[1.807s] writing dependency_links to ../../build/obstacle_avoidance/obstacle_avoidance.egg-info/dependency_links.txt
+[1.808s] writing entry points to ../../build/obstacle_avoidance/obstacle_avoidance.egg-info/entry_points.txt
+[1.808s] writing requirements to ../../build/obstacle_avoidance/obstacle_avoidance.egg-info/requires.txt
+[1.808s] writing top-level names to ../../build/obstacle_avoidance/obstacle_avoidance.egg-info/top_level.txt
+[1.859s] reading manifest file '../../build/obstacle_avoidance/obstacle_avoidance.egg-info/SOURCES.txt'
+[1.860s] writing manifest file '../../build/obstacle_avoidance/obstacle_avoidance.egg-info/SOURCES.txt'
+[1.861s] running build
+[1.861s] running build_py
+[1.861s] running install
+[1.863s] running install_lib
+[1.866s] running install_data
+[1.866s] running install_egg_info
+[1.870s] removing '/home/nvidia/ros2_uoa/install/obstacle_avoidance/lib/python3.8/site-packages/obstacle_avoidance-0.0.0-py3.8.egg-info' (and everything under it)
+[1.871s] Copying ../../build/obstacle_avoidance/obstacle_avoidance.egg-info to /home/nvidia/ros2_uoa/install/obstacle_avoidance/lib/python3.8/site-packages/obstacle_avoidance-0.0.0-py3.8.egg-info
+[1.872s] running install_scripts
+[1.902s] Installing publisher script to /home/nvidia/ros2_uoa/install/obstacle_avoidance/lib/obstacle_avoidance
+[1.902s] Installing set_mode_node_pymavlink script to /home/nvidia/ros2_uoa/install/obstacle_avoidance/lib/obstacle_avoidance
+[1.902s] Installing subscriber script to /home/nvidia/ros2_uoa/install/obstacle_avoidance/lib/obstacle_avoidance
+[1.903s] writing list of installed files to '/home/nvidia/ros2_uoa/build/obstacle_avoidance/install.log'
+[1.955s] Invoked command in '/home/nvidia/ros2_uoa/src/obstacle_avoidance' returned '0': PYTHONPATH=/home/nvidia/ros2_uoa/build/obstacle_avoidance/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nvidia/ros2_uoa/install/obstacle_avoidance/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/obstacle_avoidance build --build-base /home/nvidia/ros2_uoa/build/obstacle_avoidance/build install --record /home/nvidia/ros2_uoa/build/obstacle_avoidance/install.log --install-scripts $base/lib/obstacle_avoidance --single-version-externally-managed install_data

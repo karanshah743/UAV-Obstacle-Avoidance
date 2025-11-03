@@ -1,0 +1,5 @@
+[console_scripts]
+publisher = obstacle_avoidance.publisher:main
+set_mode_node_pymavlink = obstacle_avoidance.set_mode_node_pymavlink:main
+subscriber = obstacle_avoidance.subscriber:main
+

@@ -1,0 +1,22 @@
+/**:
+  ros__parameters:
+    # shared camera/logic
+    width: 640
+    height: 480
+    fps: 30
+    depth_thresh_m: 3.0
+    min_coverage: 0.15
+    max_range_m: 10.0
+    show_local_preview: false
+
+
+    # streaming
+    gcs_ip: "192.168.0.65"
+    # gcs_ip: "192.168.30.100"
+    gcs_port: 5600
+    use_nvv4l2: false
+    bitrate: 4000000
+
+    # subscriber
+    sub_distance_topic: "object_distance"
+    target_mode: "LOITER"
