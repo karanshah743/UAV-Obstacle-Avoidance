@@ -1,7 +1,72 @@
+# import math
+# import rclpy
+# from rclpy.node import Node
+# from std_msgs.msg import Float32
+# from realsense_object.set_mode_node_pymavlink import set_flight_mode
+
+# class DistanceSubscriber(Node):
+#     def __init__(self):
+#         super().__init__('distance_subscriber')
+
+#         # --- Declare parameters with defaults (overridden by YAML) ---
+#         self.declare_parameter('sub_distance_topic', 'object_distance')
+#         self.declare_parameter('depth_thresh_m', 1.0)
+#         self.declare_parameter('target_mode', 'LOITER')
+
+#         # --- Read parameters ---
+#         topic = self.get_parameter('sub_distance_topic').get_parameter_value().string_value
+#         self.threshold = self.get_parameter('depth_thresh_m').get_parameter_value().double_value
+#         self.target_mode = self.get_parameter('target_mode').get_parameter_value().string_value
+
+#         # --- Subscription ---
+#         self.subscription = self.create_subscription(Float32, topic, self.listener_callback, 10)
+
+#         self.mode_set = False
+#         self.get_logger().info(
+#             f"Listening on '{topic}', threshold={self.threshold} m, target_mode={self.target_mode}"
+#         )
+
+#     def listener_callback(self, msg: Float32):
+#         d = float(msg.data)
+
+#         if not math.isfinite(d) or d <= 0:
+#             return
+
+#         self.get_logger().info(f"closest-of-5: {d:.2f} m")
+
+#         if d < self.threshold and not self.mode_set:
+#             self.get_logger().warn(f"Obstacle too close ({d:.2f} m). Switching to {self.target_mode}…")
+#             if set_flight_mode(self.target_mode):
+#                 self.mode_set = True
+#         elif d >= self.threshold and self.mode_set:
+#             self.get_logger().info(f"Safe distance restored ({d:.2f} m). Resetting gate.")
+#             self.mode_set = False
+
+
+# def main(args=None):
+#     rclpy.init(args=args)
+#     node = DistanceSubscriber()
+#     rclpy.spin(node)
+#     node.destroy_node()
+#     rclpy.shutdown()
+
+
+
+
+
+
+
+
+
+
+
+
+
 import math
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32
+from geometry_msgs.msg import Twist
 from realsense_object.set_mode_node_pymavlink import set_flight_mode
 
 class DistanceSubscriber(Node):
@@ -20,28 +85,52 @@ class DistanceSubscriber(Node):
 
         # --- Subscription ---
         self.subscription = self.create_subscription(Float32, topic, self.listener_callback, 10)
+        self.publisher = self.create_publisher(Twist, 'cmd_vel', 10)
 
         self.mode_set = False
         self.get_logger().info(
             f"Listening on '{topic}', threshold={self.threshold} m, target_mode={self.target_mode}"
         )
 
+        # Store last obstacle distance
+        self.last_obstacle_distance = float('inf')
+
     def listener_callback(self, msg: Float32):
         d = float(msg.data)
 
+        # Ignore invalid / missing distances
         if not math.isfinite(d) or d <= 0:
             return
 
         self.get_logger().info(f"closest-of-5: {d:.2f} m")
 
-        if d < self.threshold and not self.mode_set:
-            self.get_logger().warn(f"Obstacle too close ({d:.2f} m). Switching to {self.target_mode}…")
+        # Reject forward motion if the obstacle is too close
+        if d < self.threshold:
+            self.get_logger().warn(f"Obstacle too close ({d:.2f} m). Rejecting forward motion command.")
             if set_flight_mode(self.target_mode):
                 self.mode_set = True
-        elif d >= self.threshold and self.mode_set:
-            self.get_logger().info(f"Safe distance restored ({d:.2f} m). Resetting gate.")
-            self.mode_set = False
+            self.reject_forward_motion()
+        else:
+            # Allow forward motion if the obstacle is at a safe distance
+            if self.last_obstacle_distance < self.threshold:
+                self.get_logger().info("Safe distance restored. Enabling forward motion.")
+            self.allow_forward_motion()
 
+        # Update the last obstacle distance
+        self.last_obstacle_distance = d
+
+    def reject_forward_motion(self):
+        # Create a zero velocity command to stop the drone from moving forward
+        cmd_vel = Twist()
+        cmd_vel.linear.x = 0.0  # Reject forward motion by setting forward speed to 0
+        self.publisher.publish(cmd_vel)
+
+    def allow_forward_motion(self):
+        # Allow forward motion (you could modify the logic here to allow normal movement)
+        cmd_vel = Twist()
+        # Set some forward velocity (example: 0.5 m/s)
+        cmd_vel.linear.x = 0.5  # Allow forward motion by setting forward speed to 0.5
+        self.publisher.publish(cmd_vel)
 
 def main(args=None):
     rclpy.init(args=args)
@@ -49,8 +138,6 @@ def main(args=None):
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
-
-
 
 
 
