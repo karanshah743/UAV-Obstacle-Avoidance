@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  ros2-uav:
+    build:
+      context: .
+      dockerfile: Dockerfile.l4t  # Change to Dockerfile.dev for dev environment
+    container_name: ros2_uav
+    runtime: nvidia
+    network_mode: host
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - ROS_DOMAIN_ID=41  # Ensure unique IDs per drone
+      - MAVLINK_URL=/dev/ttyUSB0:921600
+      - GCS_IP=192.168.0.65
+    devices:
+      - /dev/bus/usb:/dev/bus/usb      # RealSense camera
+      - /dev/ttyUSB0:/dev/ttyUSB0      # Pixhawk serial connection
+      - /dev/video0:/dev/video0
+    volumes:
+      - ./config:/ws/config
+      - ./logs:/ws/logs

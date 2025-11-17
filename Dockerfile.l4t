@@ -1,0 +1,98 @@
+# # Use a general base image for Jetson devices (r35.4)
+# FROM nvcr.io/nvidia/l4t-jetpack:r35.4.1
+
+# # Add ROS 2 repository for Foxy
+# RUN apt-get update && apt-get install -y \
+#     curl gnupg2 lsb-release \
+#     && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | apt-key add - \
+#     && echo "deb [arch=arm64] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list
+
+# # Install ROS 2 Foxy and dependencies
+# RUN apt-get update && apt-get install -y \
+#     ros-foxy-ros-base \
+#     python3-colcon-common-extensions \
+#     python3-pip \
+#     python3-vcstool \
+#     gstreamer1.0-tools \
+#     gstreamer1.0-plugins-base \
+#     gstreamer1.0-plugins-good \
+#     gstreamer1.0-plugins-bad \
+#     gstreamer1.0-plugins-ugly \
+#     libgl1 libglib2.0-0 udev \
+#     && rm -rf /var/lib/apt/lists/*
+
+# # Install Python dependencies (if you need additional ones)
+# RUN pip3 install numpy opencv-python
+
+# RUN pip3 install pyrealsense2
+
+# # Workspace Setup
+# WORKDIR /ws
+# COPY . /ws
+
+# # Build workspace
+# # RUN bash -lc "source /opt/ros/foxy/setup.bash && colcon build --merge-install --install-base /ws/install"
+# RUN bash -lc "source /opt/ros/foxy/setup.bash && colcon build"
+
+# # Set environment variables
+# ENV ROS_DISTRO=foxy \
+#     RMW_IMPLEMENTATION=rmw_fastrtps_cpp \
+#     ROS_LOCALHOST_ONLY=0
+
+# # Default command to launch ROS nodes
+# CMD bash -lc "source /opt/ros/foxy/setup.bash && source /ws/install/setup.bash && ros2 launch obstacle_avoidance pub_launch.py"
+
+
+
+
+
+
+# Use a general base image for Jetson devices (r35.4)
+FROM nvcr.io/nvidia/l4t-jetpack:r35.4.1
+
+# Add ROS 2 repository for Foxy
+RUN apt-get update && apt-get install -y \
+    curl gnupg2 lsb-release \
+    && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | apt-key add - \
+    && echo "deb [arch=arm64] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list
+
+# Add the Jetson repository for GStreamer and NVIDIA plugins
+RUN echo "deb https://repo.download.nvidia.com/jetson/common r35.4 main" | tee /etc/apt/sources.list.d/nvidia-jetson.list
+# RUN echo "deb https://repo.download.nvidia.com/jetson/t186 r35.4 main" | tee -a /etc/apt/sources.list.d/nvidia-jetson.list
+
+# Add NVIDIA GPG key for package verification
+RUN curl -sSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub | apt-key add -
+
+# Install ROS 2 Foxy and dependencies
+RUN apt-get update && apt-get install -y \
+    ros-foxy-ros-base \
+    python3-colcon-common-extensions \
+    python3-pip \
+    python3-vcstool \
+    gstreamer1.0-tools \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    libgl1 libglib2.0-0 udev \
+    python3-opencv \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pyrealsense2 for RealSense support
+RUN pip3 install pyrealsense2
+
+# Workspace Setup
+WORKDIR /ws
+COPY . /ws
+
+# Clean and rebuild workspace (remove old install directory if any)
+RUN rm -rf /ws/install
+RUN bash -lc "source /opt/ros/foxy/setup.bash && colcon build --merge-install"
+
+# Set environment variables
+ENV ROS_DISTRO=foxy \
+    RMW_IMPLEMENTATION=rmw_fastrtps_cpp \
+    ROS_LOCALHOST_ONLY=0
+
+# Default command to launch ROS nodes
+CMD bash -lc "source /opt/ros/foxy/setup.bash && source /ws/install/setup.bash && ros2 launch obstacle_avoidance pub_launch.py"
